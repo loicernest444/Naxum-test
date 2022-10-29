@@ -7,6 +7,7 @@ import DangerButton from '@/components/DangerButton.vue';
 import Pagination from '@/Components/Pagination.vue';
 import TextInput from '@/Components/TextInput.vue';
 import Modal from '@/Components/Modal.vue';
+import SearchAutocomplete from '@/Components/SearchAutocomplete.vue';
 import { Link } from "@inertiajs/inertia-vue3";
 import { Inertia } from "@inertiajs/inertia";
 import pickBy from 'lodash/pickBy';
@@ -23,6 +24,7 @@ export default {
         Pagination,
         TextInput,
         Modal,
+        SearchAutocomplete,
         Link,
     },
     props: {
@@ -44,9 +46,12 @@ export default {
                 search: this.filters.search,
                 dateFrom: this.filters.dateFrom,
                 dateTo: this.filters.dateTo,
+                distributorId: null
             },
             showInvoiceModal: false,
-            openedOrder: []
+            openedOrder: [],
+            autocompleteList: [],
+            distributorSearch: ''
         }
     },
     watch: {
@@ -60,15 +65,32 @@ export default {
     methods: {
         reset() {
             this.form = mapValues(this.form, () => null)
+            this.distributorSearch = ''
         },
         destroy(id) {
             if (confirm("Are you sure you want to Delete")) {
                 this.$inertia.delete(route('contacts.destroy', id));
             }
+        },
+        searchAutocompleteList($event){
+            if ($event.target){
+                if ($event.target.value !== '') {
+                    console.log($event.target.value)
+                    axios.get(route('distributor.autocomplete')+'?distributor_search='+$event.target.value)
+                        .then((res) => {
+                            console.log("res ==> ", res);
+                            this.autocompleteList = res.data;
+                        })
+                } else if ($event.target.value !== '') {
+
+                }
+            }
+        },
+        searchDistributor($distributor_id){
+            this.form.distributorId = $distributor_id;
         }
     },
     mounted() {
-        console.log(this.orders[0])
     }
 }
 
@@ -94,11 +116,15 @@ export default {
                 </div>
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="p-6 bg-white border-b border-gray-200">
+                        <div class="mb-2 flex items-center w-1/2">
+                            <div class="mr-2">Distributor</div>
+                            <SearchAutocomplete @input="searchAutocompleteList" @searchDistributor="searchDistributor" :items="autocompleteList" :isAsync="true"></SearchAutocomplete>
+                        </div>
                         <div class="mb-2 flex flex-row justify-between">
                             <div class="flex space-x-2">
                                 <div class="flex flex-row space-x-1">
                                     <div class="flex flex-row">
-                                        <label for="datefrom">Date From: </label>
+                                        <label class="mr-2" for="datefrom">Date From: </label>
                                         <input v-model="form.dateFrom" class="h-8" type="date" name="dateFrom" id="datefrom">
                                     </div>
                                     <div class="flex flex-row">
@@ -108,7 +134,8 @@ export default {
                                     <SecondaryButton @click="reset" class="h-8">Reset</SecondaryButton>
                                 </div>
                             </div>
-                            <div>
+                            <div class="flex items-center">
+                                <label class="mr-3" for="search">Search: </label>
                                 <TextInput
                                     id="search"
                                     v-model="form.search"
@@ -214,17 +241,6 @@ export default {
                                             class="px-4 py-2 text-white bg-blue-600 rounded-lg" >View</button
                                         >
                                     </td>
-                                    <!--                                    <td class="px-6 py-4">-->
-                                    <!--                                        <DangerButton-->
-                                    <!--                                            class="ml-3"-->
-                                    <!--                                            :class="{ 'opacity-25': form.processing }"-->
-                                    <!--                                            :disabled="form.processing"-->
-                                    <!--                                            @click="destroy(contact.id)"-->
-                                    <!--                                        >-->
-                                    <!--                                            Delete-->
-                                    <!--                                        </DangerButton>-->
-                                    <!--                                    </td>-->
-
                                 </tr>
                                 <tr v-if="orders.data.length === 0">
                                     <td class="px-6 py-4 border-t text-center" colspan="11">No orders found.</td>

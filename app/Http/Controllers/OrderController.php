@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -16,12 +17,11 @@ class OrderController extends Controller
      */
     public function index()
     {
-//        dd(Order::orderBy('id')->first()->purchaser);
         return Inertia::render(
             'Order',
             [
-                'filters' => Request::all('search', 'dateFrom', 'dateTo'),
-                'orders' => Order::filter(Request::only('search', 'dateFrom', 'dateTo'))
+                'filters' => Request::all('search', 'dateFrom', 'dateTo', 'distributorId'),
+                'orders' => Order::filter(Request::only('search', 'dateFrom', 'dateTo', 'distributorId'))
                     ->paginate(10)
                     ->withQueryString()
                     ->through(fn ($order) => [
@@ -34,10 +34,26 @@ class OrderController extends Controller
                         'order_total' => $order->order_total,
                         'percentage' => $order->percentage,
                         'commission' => $order->commission,
-                        'products' => $order->products
+                        'products' => $order->products,
+//                        'distributor_autocomplete' => $order->distributor_autocomplete,
                     ]),
             ]
         );
+    }
+
+    public function distributorAutocomplete() {
+        $filter = Request::all('distributor_search');
+        $distributor_search = $filter['distributor_search'];
+        $distributors = [];
+        foreach (User::with(['category'])->get() as  $user) {
+            if ($user->category[0]->name == 'Distributor' && (str_contains($user->id, $distributor_search)
+                || str_contains($user->name, $distributor_search)
+                || str_contains($user->username, $distributor_search)
+            )){
+                $distributors[] = $user;
+            }
+        }
+        return response()->json($distributors);
     }
 
     /**

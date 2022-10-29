@@ -10,7 +10,15 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $appends = ['distributor', 'referred_distributors', 'percentage', 'order_total', 'commission', 'products'];
+    protected $appends = [
+        'distributor',
+        'referred_distributors',
+        'percentage',
+        'order_total',
+        'commission',
+        'products',
+        'distributor_autocomplete'
+    ];
 //  Attributes
     public function getDistributorAttribute() {
         $referer = $this->purchaser->referrer;
@@ -87,6 +95,16 @@ class Order extends Model
             ->get();
     }
 
+    public function getDistributorAutocompleteAttribute(){
+        $distributors = User::whereHas('category', function ($query){
+            $query->whereName('Distributor');
+        })->get();
+        $first_names = $distributors->map(function ($distributor){
+            return $distributor->first_name;
+        });
+        dd($first_names);
+    }
+
 //    Relationships
     public function purchaser() {
         return $this->belongsTo(User::class, 'purchaser_id');
@@ -105,6 +123,11 @@ class Order extends Model
             $query->where('order_date', '>=', $dateFrom);
         })->when($filters['dateTo'] ?? null, function ($query, $dateTo) {
             $query->where('order_date', '<=', $dateTo);
+        })->when($filters['distributorId'] ?? null, function ($query, $distributorId) {
+            $referredIds = User::whereReferredBy($distributorId)->get()->map(function ($referred) {
+                return $referred->id;
+            });
+            $query->whereIn('purchaser_id', $referredIds);
         });
     }
 }
