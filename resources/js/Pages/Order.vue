@@ -51,7 +51,8 @@ export default {
             showInvoiceModal: false,
             openedOrder: [],
             autocompleteList: [],
-            distributorSearch: ''
+            distributorSearch: '',
+            totalCommission: 0
         }
     },
     watch: {
@@ -60,7 +61,18 @@ export default {
             handler: throttle(function () {
                 this.$inertia.get('/', pickBy(this.form), { preserveState: true })
             }, 150),
-        },
+        }
+    },
+    computed: {
+      totalCommission() {
+          const initialValue = 0;
+          if (this.orders.data.length > 0) {
+              return [...this.orders.data].map((order) => order.commission)
+                  .reduce((initialValue, currentValue) => initialValue + currentValue, initialValue)
+          }else {
+              return 0;
+          }
+      }
     },
     methods: {
         reset() {
@@ -116,10 +128,14 @@ export default {
                 </div>
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="p-6 bg-white border-b border-gray-200">
-                        <div class="mb-2 flex items-center w-1/2">
-                            <div class="mr-2">Distributor</div>
-                            <SearchAutocomplete @input="searchAutocompleteList" @searchDistributor="searchDistributor" :items="autocompleteList" :isAsync="true"></SearchAutocomplete>
+                        <div class="w-full flex flex-row justify-between">
+                            <div class="mb-2 flex items-center w-1/2">
+                                <div class="mr-2">Distributor</div>
+                                <SearchAutocomplete @input="searchAutocompleteList" @searchDistributor="searchDistributor" :items="autocompleteList" :isAsync="true"></SearchAutocomplete>
+                            </div>
+                            <div class="font-bold">{{'TOTAL COMMISSION: $' + totalCommission}}</div>
                         </div>
+
                         <div class="mb-2 flex flex-row justify-between">
                             <div class="flex space-x-2">
                                 <div class="flex flex-row space-x-1">
