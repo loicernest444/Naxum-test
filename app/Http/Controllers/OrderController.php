@@ -34,6 +34,7 @@ class OrderController extends Controller
                         'order_total' => $order->order_total,
                         'percentage' => $order->percentage,
                         'commission' => $order->commission,
+                        'products' => $order->products
                     ]),
             ]
         );

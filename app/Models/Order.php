@@ -10,7 +10,7 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $appends = ['distributor', 'referred_distributors', 'percentage', 'order_total', 'commission'];
+    protected $appends = ['distributor', 'referred_distributors', 'percentage', 'order_total', 'commission', 'products'];
 //  Attributes
     public function getDistributorAttribute() {
         $referer = $this->purchaser->referrer;
@@ -78,6 +78,13 @@ class Order extends Model
         }
 
         return null;
+    }
+    public function getProductsAttribute(){
+        return $this->orderItems()->rightJoin('products', 'product_id', 'products.id')
+            ->select('order_items.qantity', 'products.*')
+            ->selectRaw('sum(qantity*price) as total')
+            ->groupBy('products.name')
+            ->get();
     }
 
 //    Relationships

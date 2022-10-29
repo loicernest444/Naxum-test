@@ -6,6 +6,7 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import DangerButton from '@/components/DangerButton.vue';
 import Pagination from '@/Components/Pagination.vue';
 import TextInput from '@/Components/TextInput.vue';
+import Modal from '@/Components/Modal.vue';
 import { Link } from "@inertiajs/inertia-vue3";
 import { Inertia } from "@inertiajs/inertia";
 import pickBy from 'lodash/pickBy';
@@ -21,6 +22,7 @@ export default {
         DangerButton,
         Pagination,
         TextInput,
+        Modal,
         Link,
     },
     props: {
@@ -43,6 +45,8 @@ export default {
                 dateFrom: this.filters.dateFrom,
                 dateTo: this.filters.dateTo,
             },
+            showInvoiceModal: false,
+            openedOrder: []
         }
     },
     watch: {
@@ -78,7 +82,7 @@ export default {
         </h2>
 
         <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-9xl sm:px-6 lg:px-8">
                 <div
                     v-if="$page.props.flash && $page.props.flash.message"
                     class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
@@ -149,6 +153,9 @@ export default {
                                     <th scope="col" class="px-6 py-3">
                                         Commission
                                     </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Actions
+                                    </th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -201,17 +208,12 @@ export default {
                                     </td>
 
 
-                                    <!--                                    <td class="px-6 py-4">-->
-                                    <!--                                        <Link-->
-                                    <!--                                            :href="-->
-                                    <!--                                                    route(-->
-                                    <!--                                                        'contacts.edit',-->
-                                    <!--                                                        contact.id-->
-                                    <!--                                                    )-->
-                                    <!--                                                "-->
-                                    <!--                                            class="px-4 py-2 text-white bg-blue-600 rounded-lg" >Edit</Link-->
-                                    <!--                                        >-->
-                                    <!--                                    </td>-->
+                                    <td class="px-6 py-4">
+                                        <button
+                                            @click="showInvoiceModal = true, openedOrder = order"
+                                            class="px-4 py-2 text-white bg-blue-600 rounded-lg" >View</button
+                                        >
+                                    </td>
                                     <!--                                    <td class="px-6 py-4">-->
                                     <!--                                        <DangerButton-->
                                     <!--                                            class="ml-3"-->
@@ -222,6 +224,7 @@ export default {
                                     <!--                                            Delete-->
                                     <!--                                        </DangerButton>-->
                                     <!--                                    </td>-->
+
                                 </tr>
                                 <tr v-if="orders.data.length === 0">
                                     <td class="px-6 py-4 border-t text-center" colspan="11">No orders found.</td>
@@ -234,8 +237,92 @@ export default {
                 </div>
             </div>
         </div>
-
-
+        <Modal :show="showInvoiceModal" :maxWidth="'7xl'" @close="showInvoiceModal=false">
+            <div
+                class="relative overflow-x-auto shadow-md sm:rounded-lg"
+            >
+                <div class="flex flex-row justify-between">
+                    <div class="p-3"><b>Invoice:</b>{{openedOrder.invoice_number}}</div>
+                    <div @click="showInvoiceModal=false" class="p-2 font-bold text-xl cursor-pointer">X</div>
+                </div>
+                <table
+                    class="w-full text-sm text-left text-gray-500 dark:text-gray-400"
+                >
+                    <thead
+                        class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+                    >
+                    <tr>
+                        <th scope="col" class="px-6 py-3">
+                            SKU
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Product Name
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Price
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Quantity
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Total
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr
+                        v-for="product in openedOrder.products"
+                        :key="openedOrder.id"
+                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                    >
+                        <th
+                            scope="row"
+                            class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
+                        >
+                            {{ product.sku }}
+                        </th>
+                        <th
+                            scope="row"
+                            class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
+                        >
+                            {{ product.name }}
+                        </th>
+                        <th
+                            scope="row"
+                            class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
+                        >
+                            {{ product.price }}
+                        </th>
+                        <th
+                            scope="row"
+                            class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
+                        >
+                            {{ product.qantity }}
+                        </th>
+                        <th
+                            scope="row"
+                            class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
+                        >
+                            {{ product.qantity * product.price }}
+                        </th>
+                        <!--                                    <td class="px-6 py-4">-->
+                        <!--                                        <DangerButton-->
+                        <!--                                            class="ml-3"-->
+                        <!--                                            :class="{ 'opacity-25': form.processing }"-->
+                        <!--                                            :disabled="form.processing"-->
+                        <!--                                            @click="destroy(contact.id)"-->
+                        <!--                                        >-->
+                        <!--                                            Delete-->
+                        <!--                                        </DangerButton>-->
+                        <!--                                    </td>-->
+                    </tr>
+                    <tr v-if="orders.data.length === 0">
+                        <td class="px-6 py-4 border-t text-center" colspan="11">No orders found.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </Modal>
     </GuestLayout>
 
 </template>
