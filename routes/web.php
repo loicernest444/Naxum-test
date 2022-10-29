@@ -24,6 +24,7 @@ use Inertia\Inertia;
 //    ]);
 //});
 Route::get('/', [\App\Http\Controllers\OrderController::class, "index"])->name('order');
+Route::get('/rank-report', [\App\Http\Controllers\OrderController::class, "index"])->name('rank.report');
 Route::get('/distributor-autocomplete', [\App\Http\Controllers\OrderController::class, "distributorAutocomplete"])->name('distributor.autocomplete');
 
 
