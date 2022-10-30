@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,8 +36,8 @@ class OrderController extends Controller
                         'percentage' => $order->percentage,
                         'commission' => $order->commission,
                         'products' => $order->products,
-//                        'distributor_autocomplete' => $order->distributor_autocomplete,
                     ]),
+                'total_commission' => $this->getTotalCommissionAttribute(),
             ]
         );
     }
@@ -55,6 +56,24 @@ class OrderController extends Controller
         }
         return response()->json($distributors);
     }
+
+    /**
+     * Calculate total commission
+     * @return float|int
+     */
+    public function getTotalCommissionAttribute(){
+        $total_commission = OrderItem::rightJoin('products', 'product_id', 'products.id')
+            ->select('order_items.qantity', 'products.*')
+            ->selectRaw('sum(qantity*price) as total')
+            ->groupBy('products.name')
+            ->get()->map(function ($orderItem){
+                return $orderItem->total;
+            })->toArray();
+
+        return array_sum($total_commission);
+    }
+
+
 
     /**
      * Store a newly created resource in storage.

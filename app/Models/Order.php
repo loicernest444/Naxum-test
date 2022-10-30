@@ -17,7 +17,7 @@ class Order extends Model
         'order_total',
         'commission',
         'products',
-        'distributor_autocomplete'
+        'distributor_autocomplete',
     ];
 //  Attributes
     public function getDistributorAttribute() {
@@ -104,6 +104,7 @@ class Order extends Model
         });
         dd($first_names);
     }
+
 
 //    Relationships
     public function purchaser() {

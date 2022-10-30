@@ -32,6 +32,10 @@ export default {
             type: Object,
             default: () => ({}),
         },
+        total_commission: {
+          type: Number,
+          default: () => 0.0
+        },
         filters: Object,
     },
     setup() {
@@ -133,7 +137,7 @@ export default {
                                 <div class="mr-2">Distributor</div>
                                 <SearchAutocomplete @input="searchAutocompleteList" @searchDistributor="searchDistributor" :items="autocompleteList" :isAsync="true"></SearchAutocomplete>
                             </div>
-                            <div class="font-bold">{{'TOTAL COMMISSION: $' + totalCommission}}</div>
+                            <div class="font-bold">{{'TOTAL COMMISSION: $' + total_commission}}</div>
                         </div>
 
                         <div class="mb-2 flex flex-row justify-between">
