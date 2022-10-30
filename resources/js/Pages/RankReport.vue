@@ -1,13 +1,13 @@
 <script>
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import { Head } from "@inertiajs/inertia-vue3";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import SecondaryButton from "@/Components/SecondaryButton.vue";
+import PrimaryButton from "@/components/PrimaryButton.vue";
+import SecondaryButton from "@/components/SecondaryButton.vue";
 import DangerButton from '@/components/DangerButton.vue';
-import Pagination from '@/Components/Pagination.vue';
-import TextInput from '@/Components/TextInput.vue';
-import Modal from '@/Components/Modal.vue';
-import SearchAutocomplete from '@/Components/SearchAutocomplete.vue';
+import Pagination from '@/components/Pagination.vue';
+import TextInput from '@/components/TextInput.vue';
+import Modal from '@/components/Modal.vue';
+import SearchAutocomplete from '@/components/SearchAutocomplete.vue';
 import { Link } from "@inertiajs/inertia-vue3";
 import { Inertia } from "@inertiajs/inertia";
 import pickBy from 'lodash/pickBy';

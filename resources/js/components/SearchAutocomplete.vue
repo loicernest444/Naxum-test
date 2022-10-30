@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import TextInput from '@/Components/TextInput.vue';
+import TextInput from '@/components/TextInput.vue';
 export default {
     name: 'SearchAutocomplete',
     components: {
