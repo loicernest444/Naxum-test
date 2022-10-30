@@ -323,7 +323,7 @@ export default {
                             scope="row"
                             class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
                         >
-                            {{ product.price }}
+                            {{ '$' + product.price }}
                         </th>
                         <th
                             scope="row"
@@ -335,7 +335,7 @@ export default {
                             scope="row"
                             class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
                         >
-                            {{ product.qantity * product.price }}
+                            {{ '$' + product.qantity * product.price }}
                         </th>
                         <!--                                    <td class="px-6 py-4">-->
                         <!--                                        <DangerButton-->

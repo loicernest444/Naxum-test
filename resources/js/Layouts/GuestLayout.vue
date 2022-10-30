@@ -13,7 +13,7 @@ import ApplicationMark from '@/Components/ApplicationMark.vue';
                     <div class="flex">
                         <!-- Logo -->
                         <div class="shrink-0 flex items-center">
-                            <Link :href="route('dashboard')">
+                            <Link :href="route('order')">
                                 NaXum
                             </Link>
                         </div>
